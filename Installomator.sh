@@ -564,9 +564,7 @@ downloadURLFromGit() { # $1 git user name, $2 git repo name
             downloadURL="https://github.com$(curl -sfL "$(curl -sfL "https://github.com/$gitusername/$gitreponame/releases/latest" | tr '"' "\n" | grep -i "expanded_assets" | head -1)" | tr '"' "\n" | grep -i "^/.*\/releases\/download\/.*$archiveName" | head -1)"
         fi
     else
-        downloadURL=$(curl -sfL "${auth_header[@]}" \
-            "https://api.github.com/repos/$gitusername/$gitreponame/releases/latest" | \
-            awk -F '"' "/browser_download_url/ && /$filetype\"/ { print \$4; exit }")
+        downloadURL=$(curl -sfL "${auth_header[@]}" "https://api.github.com/repos/$gitusername/$gitreponame/releases/latest" | awk -F '"' "/browser_download_url/ && /$filetype\"/ { print \$4; exit }")
 
         if [[ "$(echo $downloadURL | grep -ioE "https.*.$filetype")" == "" ]]; then
             downloadURL="https://github.com$(curl -sfL "$(curl -sfL "https://github.com/$gitusername/$gitreponame/releases/latest" | tr '"' "\n" | grep -i "expanded_assets" | head -1)" | tr '"' "\n" | grep -i "^/.*\/releases\/download\/.*\.$filetype" | head -1)"
@@ -617,8 +615,7 @@ versionFromGit() {
         fi
     fi
 
-    appNewVersion=$(curl -sLI "https://github.com/$gitusername/$gitreponame/releases/latest" | \
-        grep -i "^location" | tr "/" "\n" | tail -1 | sed 's/[^0-9\.]//g')
+    appNewVersion=$(curl -sLI "https://github.com/$gitusername/$gitreponame/releases/latest" | grep -i "^location" | tr "/" "\n" | tail -1 | sed 's/[^0-9\.]//g')
 
     if [ -z "$appNewVersion" ]; then
         printlog "could not retrieve version number for $gitusername/$gitreponame" WARN
